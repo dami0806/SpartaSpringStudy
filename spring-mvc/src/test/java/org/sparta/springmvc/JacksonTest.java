@@ -25,7 +25,8 @@ public class JacksonTest {
         ObjectMapper objectMapper = new ObjectMapper(); // Jackson 라이브러리의 ObjectMapper
 
         Star star = objectMapper.readValue(json, Star.class); // Star라는 객체 형식으로 만들기 위함
-        System.out.println("star.getName() = " + star.getName());
-        System.out.println("star.getAge() = " + star.getAge());
+        System.out.println();
+        // System.out.println("star.getName() = " + star.getName());
+       // System.out.println("star.getAge() = " + star.getAge());
     }
 }
