@@ -22,6 +22,7 @@ public class HtmlController {
         public String templates() {
             return "hello";
         }
+
         @GetMapping("html/dynamic")
     public String htmlDynamic(Model model) {
         visitCount++;model.addAttribute("visits", visitCount);
