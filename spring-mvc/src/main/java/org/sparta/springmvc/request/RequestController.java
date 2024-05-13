@@ -58,7 +58,7 @@ public class RequestController {
     public String helloRequestParam(@ModelAttribute Star star) {
         return String.format("Hello, @ModelAttribute.<br> (name = %s, age = %d) ", star.name, star.age);
     }
-    
+
     // 바디에 쿼리스트링이 아닌 json 형식
     // [Request sample]
 // POST http://localhost:8080/hello/request/form/json
