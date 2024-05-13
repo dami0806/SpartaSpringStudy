@@ -12,7 +12,7 @@ public class RequestController {
     }
 
     // [Request sample]
-// GET http://localhost:8080/hello/request/star/Robbie/age/95
+    // GET http://localhost:8080/hello/request/star/Robbie/age/95
     @GetMapping("/star/{name}/age/{age}")
     @ResponseBody
     public String helloRequestPath(@PathVariable String name, @PathVariable int age) {
@@ -20,7 +20,7 @@ public class RequestController {
     }
 
     // [Request sample]
-// GET http://localhost:8080/hello/request/form/param?name=Robbie&age=95
+    // GET http://localhost:8080/hello/request/form/param?name=Robbie&age=95
     @GetMapping("/form/param")
     @ResponseBody
     public String helloGetRequestParam(@RequestParam String name, @RequestParam int age) {
@@ -28,11 +28,11 @@ public class RequestController {
     }
 
     // [Request sample]
-// POST http://localhost:8080/hello/request/form/param
-// Header
-//  Content type: application/x-www-form-urlencoded
-// Body
-//  name=Robbie&age=95
+    // POST http://localhost:8080/hello/request/form/param
+    // Header
+    //  Content type: application/x-www-form-urlencoded
+    // Body
+    //  name=Robbie&age=95
     @PostMapping("/form/param")
     @ResponseBody
     public String helloPostRequestParam(@RequestParam String name, @RequestParam int age) {
@@ -40,11 +40,11 @@ public class RequestController {
     }
 
     // [Request sample]
-// POST http://localhost:8080/hello/request/form/model
-// Header
-//  Content type: application/x-www-form-urlencoded
-// Body
-//  name=Robbie&age=95
+    // POST http://localhost:8080/hello/request/form/model
+    // Header
+    //  Content type: application/x-www-form-urlencoded
+    // Body
+    //  name=Robbie&age=95
     @PostMapping("/form/model")
     @ResponseBody
     public String helloRequestBodyForm(@ModelAttribute Star star) {
