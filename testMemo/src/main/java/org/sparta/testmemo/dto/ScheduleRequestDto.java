@@ -3,6 +3,7 @@ package org.sparta.testmemo.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.sparta.testmemo.entity.Schedule;
 
 @Getter
 @Setter
@@ -14,3 +15,189 @@ public class ScheduleRequestDto {
     private String password;
     private String date;
 }
+//기능은 <!DOCTYPE html>
+//<html lang="en">
+//<head>
+//    <meta charset="UTF-8">
+//    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//<title> Schedule App</title>
+//    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+//</head>
+//<body>
+//<h1>할일 목록</h1>
+//<form id="scheduleForm">
+//    <div>
+//        <label for="title">할일 제목:</label>
+//        <input type="text" id="title" name="title" required>
+//    </div>
+//    <div>
+//        <label for="description">할일 내용:</label>
+//        <textarea id="description" name="description" required></textarea>
+//    </div>
+//    <div>
+//        <label for="assignee">담당자:</label>
+//        <input type="text" id="assignee" name="assignee" required>
+//    </div>
+//    <div>
+//        <label for="date">작성일:</label>
+//        <input type="date" id="date" name="date" required>
+//    </div>
+//    <div>
+//        <label for="password">패스워드:</label>
+//        <input type="password" id="password" name="password" required>
+//    </div>
+//    <button type="button" onclick="createSchedule()">저장</button>
+//</form>
+//<h2>저장된 할일</h2>
+//<ul id="scheduleList"></ul>
+//<script>
+//function createSchedule() {
+//    if ($.trim($('#title').val()) === "" || $.trim($('#description').val()) === "" ||
+//            $.trim($('#assignee').val()) === "" || $.trim($('#date').val()) === "" || $.trim($('#password').val()) === "") {
+//        alert('모든 필드를 채워주세요');
+//        return;
+//    }
+//
+//    let scheduleData = {
+//            title: $('#title').val(),
+//            description: $('#description').val(),
+//            assignee: $('#assignee').val(),
+//            date: $('#date').val(),
+//            password: $('#password').val()
+//        };
+//
+//    $.ajax({
+//            type: "POST",
+//            url: 'http://localhost:8080/api/schedule',
+//            contentType: "application/json",
+//            data: JSON.stringify(scheduleData),
+//            success: function(response) {
+//        alert('스케줄이 성공적으로 생성되었습니다.');
+//        addScheduleToList(response);
+//        $('#scheduleForm').trigger("reset");
+//    },
+//    error: function() {
+//        alert('스케줄 저장 실패');
+//    }
+//        });
+//}
+//
+//function addScheduleToList(schedule) {
+//    let scheduleItem = $(`<li id="schedule-${schedule.id}">
+//        <span>${schedule.title}, ${schedule.description}, ${schedule.assignee}, ${schedule.date}</span>
+//        <button onclick="promptPassword(${schedule.id}, 'edit')">수정</button>
+//        <button onclick="promptPassword(${schedule.id}, 'delete')">삭제</button>
+//    </li>`);
+//    $('#scheduleList').append(scheduleItem);
+//}
+//
+//function promptPassword(scheduleId, action) {
+//    let password = prompt("비밀번호를 입력하세요:");
+//    if (!password) return;
+//    $.ajax({
+//            type: "POST",
+//            url: `api/schedule/validatePassword/${scheduleId}`,
+//    contentType: "application/json",
+//            data: JSON.stringify({ password: password }),
+//    success: function(response) {
+//        if (response) {
+//            performAction(scheduleId, action);
+//        } else {
+//            alert('비밀번호가 일치하지 않습니다.');
+//        }
+//    },
+//    error: function() {
+//        alert('비밀번호 검증 실패');
+//    }
+//        });
+//}
+//
+//function performAction(scheduleId, action) {
+//    switch (action) {
+//        case 'edit':
+//            editSchedule(scheduleId);
+//            break;
+//        case 'delete':
+//            deleteSchedule(scheduleId);
+//            break;
+//    }
+//}
+//
+//function editSchedule(id) {
+//    let scheduleItem = $(`#schedule-${id}`);
+//    let details = scheduleItem.find('span').text().split(', ');
+//    scheduleItem.find('span').html(`
+//            <input type="text" value="${details[0]}" id="edit-title-${id}">
+//        <input type="text" value="${details[1]}" id="edit-description-${id}">
+//        <input type="text" value="${details[2]}" id="edit-assignee-${id}">
+//        <input type="date" value="${details[3]}" id="edit-date-${id}">
+//    `);
+//    scheduleItem.find('button').hide();
+//    scheduleItem.append(`<button onclick="updateSchedule(${id})">확인</button>`);
+//}
+//
+//function updateSchedule(id) {
+//    let title = $(`#edit-title-${id}`).val();
+//    let description = $(`#edit-description-${id}`).val();
+//    let assignee = $(`#edit-assignee-${id}`).val();
+//    let date = $(`#edit-date-${id}`).val();
+//
+//    let scheduleData = {
+//            title: title,
+//            description: description,
+//            assignee: assignee,
+//            date: date
+//        };
+//
+//    $.ajax({
+//            type: "PUT",
+//            url: `api/schedule/${id}`,
+//    contentType: "application/json",
+//            data: JSON.stringify(scheduleData),
+//            success: function() {
+//        alert('스케줄이 성공적으로 수정되었습니다.');
+//        let scheduleItem = $(`#schedule-${id}`);
+//        scheduleItem.find('span').html(`${scheduleData.title}, ${scheduleData.description}, ${scheduleData.assignee}, ${scheduleData.date}`);
+//        scheduleItem.find('button').remove();
+//        scheduleItem.append(`<button onclick="promptPassword(${id}, 'edit')">수정</button>
+//                <button onclick="promptPassword(${id}, 'delete')">삭제</button>`);
+//    },
+//    error: function() {
+//        alert('스케줄 수정 실패');
+//    }
+//        });
+//}
+//
+//function deleteSchedule(id) {
+//    if (confirm('이 스케줄을 삭제하시겠습니까?')) {
+//        $.ajax({
+//                type: 'DELETE',
+//                url: `api/schedule/${id}`,
+//        success: function() {
+//            alert('스케줄이 성공적으로 삭제되었습니다.');
+//            $(`#schedule-${id}`).remove();
+//        },
+//        error: function() {
+//            alert('스케줄 삭제 실패');
+//        }
+//            });
+//    }
+//}
+//
+//function fetchSchedules() {
+//    $.ajax({
+//            type: 'GET',
+//            url: '/api/schedule',
+//            success: function(response) {
+//        response.forEach(addScheduleToList);
+//    }
+//        });
+//}
+//
+//$(document).ready(function() {
+//    fetchSchedules();
+//});
+//</script>
+//</body>
+//</html>
+//유지 해주세요 더미 데이터도 필요 없습니다. 디자인을 추가하되 수정 삭제 버튼 디테일보는것만 넣어야합니다. 지금은 이 기증들이

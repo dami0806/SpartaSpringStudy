@@ -20,10 +20,6 @@ public class ScheduleController {
     private static final Logger log = LoggerFactory.getLogger(ScheduleController.class);
 
     private final Map<Long, Schedule> scheduleList = new ConcurrentHashMap<>();
-
-    /**
-     * 스케줄 post
-     */
     @PostMapping("/schedule")
     public ResponseEntity<ScheduleResponseDto> createSchedule(@RequestBody ScheduleRequestDto requestDto) {
         try {
@@ -42,43 +38,48 @@ public class ScheduleController {
 
     @GetMapping("/schedule")
     public List<ScheduleResponseDto> getScheduleList() {
-        //List
         List<ScheduleResponseDto> scheduleResponseDtoList = scheduleList.values()
                 .stream()
-                .map(schedule ->
-                        new ScheduleResponseDto(schedule)).toList();
+                .map(schedule -> new ScheduleResponseDto(schedule))
+                .toList();
         return scheduleResponseDtoList;
     }
 
+    @GetMapping("/schedule/{id}")
+    public ResponseEntity<ScheduleResponseDto> getDetailSchedule(@PathVariable Long id) {
+        Schedule schedule = scheduleList.get(id);
+        if (schedule != null) {
+            ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);
+            return ResponseEntity.ok(responseDto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @PutMapping("/schedule/{id}")
-    public Long updateSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto requestDto) {
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto requestDto) {
         if (scheduleList.containsKey(id)) {
             Schedule schedule = scheduleList.get(id);
-
-            //schedule 수정
             schedule.update(requestDto);
-
             schedule.setTitle(requestDto.getTitle());
             schedule.setDescription(requestDto.getDescription());
             schedule.setAssignee(requestDto.getAssignee());
             schedule.setDate(requestDto.getDate());
-
-           log.info("Updated schedule: {}", schedule.getPassword());
             scheduleList.put(id, schedule);
-            return schedule.getId();
-
+            ScheduleResponseDto responseDto = new ScheduleResponseDto(schedule);
+            return ResponseEntity.ok(responseDto);
         } else {
-            throw new IllegalArgumentException("선택한 스케줄이 존재하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @DeleteMapping("/schedule/{id}")
-    public Long deleteSchedule(@PathVariable Long id) {
+    public ResponseEntity<Long> deleteSchedule(@PathVariable Long id) {
         if (scheduleList.containsKey(id)) {
             scheduleList.remove(id);
-            return id;
+            return ResponseEntity.ok(id);
         } else {
-            throw new IllegalArgumentException("선택한 스케줄이 존재하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
@@ -86,13 +87,12 @@ public class ScheduleController {
     public ResponseEntity<Boolean> verifyPassword(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
         try {
             String inputPassword = requestBody.get("password");
-
             Schedule schedule = scheduleList.get(id);
             if (schedule != null && schedule.getPassword().equals(inputPassword)) {
-                return ResponseEntity.ok(true); // 비밀번호 일치 시 true 반환
+                return ResponseEntity.ok(true);
             }
             return ResponseEntity.ok(false);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error verifying password: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
