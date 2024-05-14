@@ -61,8 +61,9 @@ public class ScheduleController {
             schedule.setTitle(requestDto.getTitle());
             schedule.setDescription(requestDto.getDescription());
             schedule.setAssignee(requestDto.getAssignee());
-            schedule.setPassword(requestDto.getPassword());
             schedule.setDate(requestDto.getDate());
+
+           log.info("Updated schedule: {}", schedule.getPassword());
             scheduleList.put(id, schedule);
             return schedule.getId();
 

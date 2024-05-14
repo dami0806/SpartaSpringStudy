@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.sparta.testmemo.dto.ScheduleRequestDto;
 
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,7 +29,6 @@ public class Schedule {
         this.title = requestDto.getTitle();
         this.description = requestDto.getDescription();
         this.assignee = requestDto.getAssignee();
-        this.password = requestDto.getPassword();
         this.date = requestDto.getDate();
     }
 }
