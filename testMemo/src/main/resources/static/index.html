@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule App</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h1>할일 목록</h1>
+<form id="scheduleForm">
+    <div>
+        <label for="title">할일 제목:</label>
+        <input type="text" id="title" name="title">
+    </div>
+    <div>
+        <label for="description">할일 내용:</label>
+        <textarea id="description" name="description"></textarea>
+    </div>
+    <div>
+        <label for="assignee">담당자:</label>
+        <input type="text" id="assignee" name="assignee">
+    </div>
+    <div>
+        <label for="date">작성일:</label>
+        <input type="date" id="date" name="date">
+    </div>
+
+    <div>
+        <label for="password">패스워드:</label>
+        <input type="password" id="password" name="password">
+    </div>
+
+    <button type="button" onclick="createSchedule()">저장</button>
+</form>
+
+<h2>저장된 할일</h2>
+<ul id="scheduleList"></ul>
+
+<script>
+    function createSchedule() {
+        let title = $('#title').val();
+        let description = $('#description').val();
+        let assignee = $('#assignee').val();
+        let date = $('#date').val();
+        let password = $('#password').val();
+        let scheduleData = {
+            title: title,
+            description: description,
+            assignee: assignee,
+            date: date,
+            password: password
+        };
+
+        $.ajax({
+            type: "POST",
+            url: 'http://localhost:8080/api/schedule',
+            contentType: "application/json",
+            data: JSON.stringify(scheduleData),
+            success: function(response) {
+                alert('스케줄이 성공적으로 생성되었습니다.');
+                addScheduleToList(response);  // 리팩토링하여 함수로 추출
+
+                $('#scheduleForm').trigger("reset");  // 폼 리셋
+            },
+            error: function() {
+                alert('스케줄 저장 실패');
+            }
+        });
+    }
+
+    function addScheduleToList(schedule) {
+        let scheduleItem = $(`<li id="schedule-${schedule.id}">
+            <span>${schedule.title}, ${schedule.description}, ${schedule.assignee}, ${schedule.date}</span>
+
+            <button onclick="promptPassword(${schedule.id}, 'edit')">수정</button>
+            <button onclick="promptPassword(${schedule.id}, 'delete')">삭제</button>
+        </li>`);
+        $('#scheduleList').append(scheduleItem);
+    }
+    function promptPassword(scheduleId, action) {
+        let password = prompt("비밀번호를 입력하세요:");
+        $.ajax({
+            type: "POST",
+            url: `http://localhost:8080/api/schedule/validatePassword/${scheduleId}`,
+            contentType: "application/json",
+            data: JSON.stringify({ password: password }),
+            success: function(response) {
+                if (response) {
+                    if (action === 'edit') {
+                        editSchedule(scheduleId);
+                    } else if (action === 'delete') {
+                        deleteSchedule(scheduleId);
+                    }
+                } else {
+                    alert('비밀번호가 일치하지 않습니다.');
+                }
+            },
+            error: function() {
+                alert('비밀번호 검증 실패');
+            }
+        });
+    }
+    function editSchedule(id) {
+        let scheduleItem = $(`#schedule-${id}`);
+        let details = scheduleItem.find('span').text().split(', ');
+        scheduleItem.find('span').html(`
+            <input type="text" value="${details[0]}" id="edit-title-${id}">
+            <input type="text" value="${details[1]}" id="edit-description-${id}">
+            <input type="text" value="${details[2]}" id="edit-assignee-${id}">
+            <input type="date" value="${details[3]}" id="edit-date-${id}">
+        `);
+        scheduleItem.find('button').hide();
+        scheduleItem.append(`<button onclick="updateSchedule(${id})">확인</button>`);
+    }
+
+    function updateSchedule(id) {
+        let title = $(`#edit-title-${id}`).val();
+        let description = $(`#edit-description-${id}`).val();
+        let assignee = $(`#edit-assignee-${id}`).val();
+        let date = $(`#edit-date-${id}`).val();
+
+        let scheduleData = {
+            title: title,
+            description: description,
+            assignee: assignee,
+            date: date
+        };
+
+        $.ajax({
+            type: "PUT",
+            url: `http://localhost:8080/api/schedule/${id}`,
+            contentType: "application/json",
+            data: JSON.stringify(scheduleData),
+            success: function(response) {
+                alert('스케줄이 성공적으로 수정되었습니다.');
+                // 스케줄 정보를 업데이트하고 입력 필드를 제거
+                let scheduleItem = $(`#schedule-${id}`);
+                scheduleItem.find('span').html(`${title}, ${description}, ${assignee}, ${date}`);
+                scheduleItem.find('button').remove(); // 모든 버튼 제거
+                // 다시 수정, 삭제 버튼 추가
+                scheduleItem.append(`
+                <button onclick="editSchedule(${id})">수정</button>
+                <button onclick="deleteSchedule(${id})">삭제</button>
+            `);
+//                fetchSchedules();  // 스케줄 리스트 갱신
+            },
+            error: function() {
+                alert('스케줄 수정 실패');
+            }
+        });
+    }
+    function fetchSchedules() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:8080/api/schedule',
+            success: function(response) {
+                response.forEach(addScheduleToList);
+
+            }
+        });
+    }
+    function deleteSchedule(id) {
+        if (confirm('이 스케줄을 삭제하시겠습니까?')) {
+            $.ajax({
+                type: 'DELETE',
+                url: `http://localhost:8080/api/schedule/${id}`,
+                success: function() {
+                    alert('스케줄이 성공적으로 삭제되었습니다.');
+                    $(`#schedule-${id}`).remove();
+                },
+                error: function() {
+                    alert('스케줄 삭제 실패');
+                }
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        fetchSchedules();
+    });
+</script>
+</body>
+</html>

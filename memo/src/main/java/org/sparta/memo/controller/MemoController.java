@@ -88,6 +88,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class MemoController {
 
+    // JdbcTemplate 인스턴스 주입. 데이터베이스 작업을 위해 사용됨.
     private final JdbcTemplate jdbcTemplate;
 
     public MemoController(JdbcTemplate jdbcTemplate) {
@@ -96,13 +97,16 @@ public class MemoController {
 
     @PostMapping("/memos")
     public MemoResponseDto createMemo(@RequestBody MemoRequestDto requestDto) {
+        // 요청 DTO로부터 Memo 엔티티 생성
         // RequestDto -> Entity
         Memo memo = new Memo(requestDto);
 
-        // DB 저장
+        // DB 저장 // 삽입된 행의 ID를 얻기 위한 KeyHolder
         KeyHolder keyHolder = new GeneratedKeyHolder(); // 기본 키를 반환받기 위한 객체
-
+        // SQL 쿼리 준비
         String sql = "INSERT INTO memo (username, contents) VALUES (?, ?)";
+
+        // 데이터베이스에 새 메모 삽입
         jdbcTemplate.update( con -> {
                     PreparedStatement preparedStatement = con.prepareStatement(sql,
                             Statement.RETURN_GENERATED_KEYS);
@@ -115,12 +119,13 @@ public class MemoController {
 
         // DB Insert 후 받아온 기본키 확인
         Long id = keyHolder.getKey().longValue();
+
+        // 생성된 키(ID)를 메모에 설정
         memo.setId(id);
 
         // Entity -> ResponseDto
-        MemoResponseDto memoResponseDto = new MemoResponseDto(memo);
-
-        return memoResponseDto;
+        // 생성된 메모를 Response DTO로 변환하여 반환
+        return new MemoResponseDto(memo);
     }
 
     @GetMapping("/memos")
