@@ -20,8 +20,8 @@ import java.util.List;
 public class MemoService {
   //  private final JdbcTemplate jdbcTemplate;
 private final MemoRepository memoRepository;
-    public MemoService(JdbcTemplate jdbcTemplate) {
-        this.memoRepository = new MemoRepository(jdbcTemplate);
+    public MemoService(MemoRepository memoRepository) {
+        this.memoRepository = memoRepository;
         //        this.jdbcTemplate = jdbcTemplate;
     }
 

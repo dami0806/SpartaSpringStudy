@@ -15,8 +15,8 @@ public class MemoController {
     // JdbcTemplate 인스턴스 주입. 데이터베이스 작업을 위해 사용됨.
     private final MemoService memoService;
 
-    public MemoController(JdbcTemplate jdbcTemplate) {
-        this.memoService = new MemoService(jdbcTemplate);
+    public MemoController(MemoService memoService) {
+        this.memoService = memoService;
     }
 
     @PostMapping("/memos")
