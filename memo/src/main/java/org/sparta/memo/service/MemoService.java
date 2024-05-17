@@ -4,10 +4,13 @@ import org.sparta.memo.dto.MemoRequestDto;
 import org.sparta.memo.dto.MemoResponseDto;
 import org.sparta.memo.entity.Memo;
 import org.sparta.memo.repository.MemoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -17,9 +20,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+@Service
 public class MemoService {
   //  private final JdbcTemplate jdbcTemplate;
 private final MemoRepository memoRepository;
+@Autowired
     public MemoService(MemoRepository memoRepository) {
         this.memoRepository = memoRepository;
         //        this.jdbcTemplate = jdbcTemplate;
